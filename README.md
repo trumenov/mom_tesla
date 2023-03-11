@@ -3,10 +3,10 @@ My mother car) Based on gyroscooter with stm32 f103 controller
 
 Original repository: https://github.com/EFeru/hoverboard-firmware-hack-FOC
 
-launch watcher for auto rebuild binary:
+## launch watcher for auto rebuild binary:
 ./watch_run.sh
 
-write hover.bin to the mcu:
+## write hover.bin to the mcu:
 st-flash --reset write build/hover.bin 0x08000000
 
 # Next block with instal info for ubuntu-server 22.04 LTS) Servers anywhere)))) 
