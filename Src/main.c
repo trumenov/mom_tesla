@@ -489,7 +489,7 @@ int main(void) {
 
     // ####### DEBUG SERIAL OUT #######
     #if defined(DEBUG_SERIAL_USART2) || defined(DEBUG_SERIAL_USART3)
-      if (main_loop_counter % 25 == 0) {    // Send data periodically every 125 ms
+      if (main_loop_counter % 1500 == 0) {    // Send data periodically every 125 ms
         #if defined(DEBUG_SERIAL_PROTOCOL)
           process_debug();
         #else
