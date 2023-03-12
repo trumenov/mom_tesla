@@ -82,13 +82,13 @@ void PPM_Init(void) {
   TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
   HAL_TIM_Base_Init(&TimHandle);
 
-  #if defined(CONTROL_PPM_LEFT)  
+  #if defined(CONTROL_PPM_LEFT)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
   #endif
 
-  #if defined(CONTROL_PPM_RIGHT)  
+  #if defined(CONTROL_PPM_RIGHT)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
@@ -178,8 +178,8 @@ void PWM_Init(void) {
   TimHandle.Init.Prescaler      = (SystemCoreClock/DELAY_TIM_FREQUENCY_US)-1;;
   TimHandle.Init.ClockDivision  = 0;
   TimHandle.Init.CounterMode    = TIM_COUNTERMODE_UP;
-  HAL_TIM_Base_Init(&TimHandle);  
-  
+  HAL_TIM_Base_Init(&TimHandle);
+
   // Channel 1 (steering)
   GPIO_InitTypeDef GPIO_InitStruct1 = {0};
   // Configure GPIO pin : PA2 (Left) or PB10 (Right)
@@ -255,7 +255,7 @@ uint8_t Nunchuk_Init(void) {
 uint8_t Nunchuk_Connect() {
   /* Initialise / re-initialise I2C peripheral */
   I2C_Init();
-  
+
   /* Initialise / re-initialise nunchuk */
   if(Nunchuk_Init() == true) {
     nunchukState = NUNCHUK_CONNECTED;
@@ -280,7 +280,7 @@ nunchuk_state Nunchuk_Read(void) {
         delay_counter = 0;
       }
       break;
-      
+
     case NUNCHUK_CONNECTING:
     case NUNCHUK_RECONNECTING:
         /* Try to reconnect once, if fails again fall back to disconnected state */

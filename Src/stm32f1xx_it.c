@@ -236,7 +236,7 @@ void DMA1_Channel5_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
   __HAL_GPIO_EXTI_CLEAR_IT(PPM_PIN);
-  PPM_ISR_Callback();    
+  PPM_ISR_Callback();
 }
 #endif
 #ifdef CONTROL_PPM_RIGHT
@@ -251,7 +251,7 @@ void EXTI15_10_IRQHandler(void)
 
 #ifdef CONTROL_PWM_LEFT
 void EXTI2_IRQHandler(void)
-{    
+{
   __HAL_GPIO_EXTI_CLEAR_IT(PWM_PIN_CH1);
   PWM_ISR_CH1_Callback();
 }
@@ -259,7 +259,7 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
   __HAL_GPIO_EXTI_CLEAR_IT(PWM_PIN_CH2);
-  PWM_ISR_CH2_Callback();    
+  PWM_ISR_CH2_Callback();
 }
 #endif
 #ifdef CONTROL_PWM_RIGHT
@@ -363,7 +363,7 @@ void USART3_IRQHandler(void)
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART2_IRQn 1 */
-  if(RESET != __HAL_UART_GET_IT_SOURCE(&huart3, UART_IT_IDLE)) {  // Check for IDLE line interrupt  
+  if(RESET != __HAL_UART_GET_IT_SOURCE(&huart3, UART_IT_IDLE)) {  // Check for IDLE line interrupt
       __HAL_UART_CLEAR_IDLEFLAG(&huart3);                         // Clear IDLE line flag (otherwise it will continue to enter interrupt)
       usart3_rx_check();                                          // Check for data to process
   }
