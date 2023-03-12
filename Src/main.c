@@ -107,11 +107,11 @@ extern volatile uint32_t buzzerTimer;
 volatile uint32_t main_loop_counter;
 int16_t batVoltageCalib;         // global variable for calibrated battery voltage
 int16_t board_temp_deg_c;        // global variable for calibrated temperature in degrees Celsius
-int16_t left_dc_curr;            // global variable for Left DC Link current 
+int16_t left_dc_curr;            // global variable for Left DC Link current
 int16_t right_dc_curr;           // global variable for Right DC Link current
-int16_t dc_curr;                 // global variable for Total DC Link current 
-int16_t cmdL;                    // global variable for Left Command 
-int16_t cmdR;                    // global variable for Right Command 
+int16_t dc_curr;                 // global variable for Total DC Link current
+int16_t cmdL;                    // global variable for Left Command
+int16_t cmdR;                    // global variable for Right Command
 
 //------------------------------------------------------------------------
 // Local variables
@@ -139,12 +139,12 @@ static uint8_t sideboard_leds_R;
 
 #ifdef VARIANT_TRANSPOTTER
   uint8_t  nunchuk_connected;
-  extern float    setDistance;  
+  extern float    setDistance;
 
   static uint8_t  checkRemote = 0;
   static uint16_t distance;
   static float    steering;
-  static int      distanceErr;  
+  static int      distanceErr;
   static int      lastDistance = 0;
   static uint16_t transpotter_counter = 0;
 #endif
@@ -209,7 +209,7 @@ int main(void) {
 
   poweronMelody();
   HAL_GPIO_WritePin(LED_PORT, LED_PIN, GPIO_PIN_SET);
-  
+
   int32_t board_temp_adcFixdt = adc_buffer.temp << 16;  // Fixed-point filter output initialized with current ADC converted to fixed-point
   int16_t board_temp_adcFilt  = adc_buffer.temp;
 
@@ -256,7 +256,7 @@ int main(void) {
 
     #ifndef VARIANT_TRANSPOTTER
       // ####### MOTOR ENABLING: Only if the initial input is very small (for SAFETY) #######
-      if (enable == 0 && !rtY_Left.z_errCode && !rtY_Right.z_errCode && 
+      if (enable == 0 && !rtY_Left.z_errCode && !rtY_Right.z_errCode &&
           ABS(input1[inIdx].cmd) < 50 && ABS(input2[inIdx].cmd) < 50){
         beepShort(6);                     // make 2 beeps indicating the motor enable
         beepShort(4); HAL_Delay(100);
@@ -296,7 +296,7 @@ int main(void) {
 
       #ifdef VARIANT_HOVERCAR
       if (inIdx == CONTROL_ADC) {                                   // Only use use implementation below if pedals are in use (ADC input)
-        if (speedAvg > 0) {                                         // Make sure the Brake pedal is opposite to the direction of motion AND it goes to 0 as we reach standstill (to avoid Reverse driving by Brake pedal) 
+        if (speedAvg > 0) {                                         // Make sure the Brake pedal is opposite to the direction of motion AND it goes to 0 as we reach standstill (to avoid Reverse driving by Brake pedal)
           input1[inIdx].cmd = (int16_t)((-input1[inIdx].cmd * speedBlend) >> 15);
         } else {
           input1[inIdx].cmd = (int16_t)(( input1[inIdx].cmd * speedBlend) >> 15);
@@ -305,7 +305,7 @@ int main(void) {
       #endif
 
       #ifdef VARIANT_SKATEBOARD
-        if (input2[inIdx].cmd < 0) {                                // When Throttle is negative, it acts as brake. This condition is to make sure it goes to 0 as we reach standstill (to avoid Reverse driving) 
+        if (input2[inIdx].cmd < 0) {                                // When Throttle is negative, it acts as brake. This condition is to make sure it goes to 0 as we reach standstill (to avoid Reverse driving)
           if (speedAvg > 0) {                                       // Make sure the braking is opposite to the direction of motion
             input2[inIdx].cmd  = (int16_t)(( input2[inIdx].cmd * speedBlend) >> 15);
           } else {
@@ -341,11 +341,11 @@ int main(void) {
       }
       #endif
 
-      #if defined(TANK_STEERING) && !defined(VARIANT_HOVERCAR) && !defined(VARIANT_SKATEBOARD) 
+      #if defined(TANK_STEERING) && !defined(VARIANT_HOVERCAR) && !defined(VARIANT_SKATEBOARD)
         // Tank steering (no mixing)
-        cmdL = steer; 
+        cmdL = steer;
         cmdR = speed;
-      #else 
+      #else
         // ####### MIXER #######
         mixerFcn(speed << 4, steer << 4, &cmdR, &cmdL);   // This function implements the equations above
       #endif
@@ -439,7 +439,7 @@ int main(void) {
               nunchuk_connected = 0;
 	    }
           }
-        }   
+        }
       #endif
 
       #ifdef SUPPORT_LCD
@@ -472,7 +472,7 @@ int main(void) {
     #if defined(FEEDBACK_SERIAL_USART3)
       sideboardLeds(&sideboard_leds_R);
     #endif
-    
+
 
     // ####### CALC BOARD TEMPERATURE #######
     filtLowPass32(adc_buffer.temp, TEMP_FILT_COEF, &board_temp_adcFixdt);
@@ -483,13 +483,13 @@ int main(void) {
     batVoltageCalib = batVoltage * BAT_CALIB_REAL_VOLTAGE / BAT_CALIB_ADC;
 
     // ####### CALC DC LINK CURRENT #######
-    left_dc_curr  = -(rtU_Left.i_DCLink * 100) / A2BIT_CONV;   // Left DC Link Current * 100 
+    left_dc_curr  = -(rtU_Left.i_DCLink * 100) / A2BIT_CONV;   // Left DC Link Current * 100
     right_dc_curr = -(rtU_Right.i_DCLink * 100) / A2BIT_CONV;  // Right DC Link Current * 100
     dc_curr       = left_dc_curr + right_dc_curr;            // Total DC Link Current * 100
 
     // ####### DEBUG SERIAL OUT #######
     #if defined(DEBUG_SERIAL_USART2) || defined(DEBUG_SERIAL_USART3)
-      if (main_loop_counter % 25 == 0) {    // Send data periodically every 125 ms      
+      if (main_loop_counter % 25 == 0) {    // Send data periodically every 125 ms
         #if defined(DEBUG_SERIAL_PROTOCOL)
           process_debug();
         #else
@@ -520,7 +520,7 @@ int main(void) {
         #if defined(FEEDBACK_SERIAL_USART2)
           if(__HAL_DMA_GET_COUNTER(huart2.hdmatx) == 0) {
             Feedback.cmdLed     = (uint16_t)sideboard_leds_L;
-            Feedback.checksum   = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas 
+            Feedback.checksum   = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas
                                            ^ Feedback.batVoltage ^ Feedback.boardTemp ^ Feedback.cmdLed);
 
             HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&Feedback, sizeof(Feedback));
@@ -529,7 +529,7 @@ int main(void) {
         #if defined(FEEDBACK_SERIAL_USART3)
           if(__HAL_DMA_GET_COUNTER(huart3.hdmatx) == 0) {
             Feedback.cmdLed     = (uint16_t)sideboard_leds_R;
-            Feedback.checksum   = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas 
+            Feedback.checksum   = (uint16_t)(Feedback.start ^ Feedback.cmd1 ^ Feedback.cmd2 ^ Feedback.speedR_meas ^ Feedback.speedL_meas
                                            ^ Feedback.batVoltage ^ Feedback.boardTemp ^ Feedback.cmdLed);
 
             HAL_UART_Transmit_DMA(&huart3, (uint8_t *)&Feedback, sizeof(Feedback));
@@ -584,7 +584,7 @@ int main(void) {
     }
 
     #if defined(CRUISE_CONTROL_SUPPORT) || defined(STANDSTILL_HOLD_ENABLE)
-      if ((abs(rtP_Left.n_cruiseMotTgt)  > 50 && rtP_Left.b_cruiseCtrlEna) || 
+      if ((abs(rtP_Left.n_cruiseMotTgt)  > 50 && rtP_Left.b_cruiseCtrlEna) ||
           (abs(rtP_Right.n_cruiseMotTgt) > 50 && rtP_Right.b_cruiseCtrlEna)) {
         inactivity_timeout_counter = 0;
       }

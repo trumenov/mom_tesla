@@ -105,7 +105,7 @@ uint8_t  timeoutFlgADC    = 0;          // Timeout Flag for ADC Protection:    0
 uint8_t  timeoutFlgSerial = 0;          // Timeout Flag for Rx Serial command: 0 = OK, 1 = Problem detected (line disconnected or wrong Rx data)
 
 uint8_t  ctrlModReqRaw = CTRL_MOD_REQ;
-uint8_t  ctrlModReq    = CTRL_MOD_REQ;  // Final control mode request 
+uint8_t  ctrlModReq    = CTRL_MOD_REQ;  // Final control mode request
 
 #if defined(DEBUG_I2C_LCD) || defined(SUPPORT_LCD)
 LCD_PCF8574_HandleTypeDef lcd;
@@ -216,7 +216,7 @@ static uint8_t standstillAcv = 0;
     #endif
     return ch;
   }
-  
+
   #ifdef __GNUC__
     int _write(int file, char *data, int len) {
       int i;
@@ -226,18 +226,18 @@ static uint8_t standstillAcv = 0;
   #endif
 #endif
 
- 
+
 /* =========================== Initialization Functions =========================== */
 
 void BLDC_Init(void) {
-  /* Set BLDC controller parameters */ 
+  /* Set BLDC controller parameters */
   rtP_Left.b_angleMeasEna       = 0;            // Motor angle input: 0 = estimated angle, 1 = measured angle (e.g. if encoder is available)
   rtP_Left.z_selPhaCurMeasABC   = 0;            // Left motor measured current phases {Green, Blue} = {iA, iB} -> do NOT change
   rtP_Left.z_ctrlTypSel         = CTRL_TYP_SEL;
   rtP_Left.b_diagEna            = DIAG_ENA;
   rtP_Left.i_max                = (I_MOT_MAX * A2BIT_CONV) << 4;        // fixdt(1,16,4)
   rtP_Left.n_max                = N_MOT_MAX << 4;                       // fixdt(1,16,4)
-  rtP_Left.b_fieldWeakEna       = FIELD_WEAK_ENA; 
+  rtP_Left.b_fieldWeakEna       = FIELD_WEAK_ENA;
   rtP_Left.id_fieldWeakMax      = (FIELD_WEAK_MAX * A2BIT_CONV) << 4;   // fixdt(1,16,4)
   rtP_Left.a_phaAdvMax          = PHASE_ADV_MAX << 4;                   // fixdt(1,16,4)
   rtP_Left.r_fieldWeakHi        = FIELD_WEAK_HI << 4;                   // fixdt(1,16,4)
@@ -318,7 +318,7 @@ void Input_Init(void) {
         EE_ReadVariable(VirtAddVarTab[ 8+8*i] , &readVal); input2[i].min = (int16_t)readVal;
         EE_ReadVariable(VirtAddVarTab[ 9+8*i] , &readVal); input2[i].mid = (int16_t)readVal;
         EE_ReadVariable(VirtAddVarTab[10+8*i] , &readVal); input2[i].max = (int16_t)readVal;
-      
+
         printf("Limits Input1: TYP:%i MIN:%i MID:%i MAX:%i\r\nLimits Input2: TYP:%i MIN:%i MID:%i MAX:%i\r\n",
           input1[i].typ, input1[i].min, input1[i].mid, input1[i].max,
           input2[i].typ, input2[i].min, input2[i].mid, input2[i].max);
@@ -407,8 +407,8 @@ void Input_Init(void) {
 #if defined(DEBUG_SERIAL_USART2) || defined(CONTROL_SERIAL_USART2) || defined(SIDEBOARD_SERIAL_USART2) || \
     defined(DEBUG_SERIAL_USART3) || defined(CONTROL_SERIAL_USART3) || defined(SIDEBOARD_SERIAL_USART3)
 void UART_DisableRxErrors(UART_HandleTypeDef *huart)
-{  
-  CLEAR_BIT(huart->Instance->CR1, USART_CR1_PEIE);    /* Disable PE (Parity Error) interrupts */  
+{
+  CLEAR_BIT(huart->Instance->CR1, USART_CR1_PEIE);    /* Disable PE (Parity Error) interrupts */
   CLEAR_BIT(huart->Instance->CR3, USART_CR3_EIE);     /* Disable EIE (Frame error, noise error, overrun error) interrupts */
 }
 #endif
@@ -477,13 +477,13 @@ void calcAvgSpeed(void) {
       // Average only if both motors are enabled
       #if defined(MOTOR_LEFT_ENA)
         speedAvg /= 2;
-      #endif  
+      #endif
     #endif
 
     // Handle the case when SPEED_COEFFICIENT sign is negative (which is when most significant bit is 1)
     if (SPEED_COEFFICIENT & (1 << 16)) {
       speedAvg    = -speedAvg;
-    } 
+    }
     speedAvgAbs   = abs(speedAvg);
 }
 
@@ -522,7 +522,7 @@ void adcCalibLim(void) {
   int16_t  INPUT2_MAX_temp = MIN_int16_T;
   int16_t  input_margin    = 0;
   uint16_t input_cal_timeout = 0;
-  
+
   #ifdef CONTROL_ADC
   if (inIdx == CONTROL_ADC) {
     input_margin = ADC_MARGIN;
@@ -534,7 +534,7 @@ void adcCalibLim(void) {
     readInputRaw();
     filtLowPass32(input1[inIdx].raw, FILTER, &input1_fixdt);
     filtLowPass32(input2[inIdx].raw, FILTER, &input2_fixdt);
-    
+
     INPUT1_MID_temp = (int16_t)(input1_fixdt >> 16);// CLAMP(input1_fixdt >> 16, INPUT1_MIN, INPUT1_MAX);   // convert fixed-point to integer
     INPUT2_MID_temp = (int16_t)(input2_fixdt >> 16);// CLAMP(input2_fixdt >> 16, INPUT2_MIN, INPUT2_MAX);
     INPUT1_MIN_temp = MIN(INPUT1_MIN_temp, INPUT1_MID_temp);
@@ -636,9 +636,9 @@ void updateCurSpdLim(void) {
     HAL_Delay(5);
   }
   // Calculate scaling factors
-  cur_factor = CLAMP((input1_fixdt - (input1[inIdx].min << 16)) / (input1[inIdx].max - input1[inIdx].min), 6553, 65535);    // ADC1, MIN_cur(10%) = 1.5 A 
+  cur_factor = CLAMP((input1_fixdt - (input1[inIdx].min << 16)) / (input1[inIdx].max - input1[inIdx].min), 6553, 65535);    // ADC1, MIN_cur(10%) = 1.5 A
   spd_factor = CLAMP((input2_fixdt - (input2[inIdx].min << 16)) / (input2[inIdx].max - input2[inIdx].min), 3276, 65535);    // ADC2, MIN_spd(5%)  = 50 rpm
-      
+
   if (input1[inIdx].typ != 0){
     // Update current limit
     rtP_Left.i_max = rtP_Right.i_max  = (int16_t)((I_MOT_MAX * A2BIT_CONV * cur_factor) >> 12);    // fixdt(0,16,16) to fixdt(1,16,4)
@@ -664,7 +664,7 @@ void updateCurSpdLim(void) {
  * Standstill Hold Function
  * This function uses Cruise Control to provide an anti-roll functionality at standstill.
  * Only available and makes sense for FOC VOLTAGE or FOC TORQUE mode.
- * 
+ *
  * Input:  none
  * Output: standstillAcv
  */
@@ -678,7 +678,7 @@ void standstillHold(void) {
         rtP_Left.b_cruiseCtrlEna  = 1;
         rtP_Right.b_cruiseCtrlEna = 1;
         standstillAcv = 1;
-      } 
+      }
     }
     else {                                                            // If Stanstill is Active -> try Deactivation
       if (input1[inIdx].cmd < 20 && input2[inIdx].cmd > 50 && !cruiseCtrlAcv) { // Check if Brake is released AND Throttle is pressed AND no Cruise Control
@@ -694,7 +694,7 @@ void standstillHold(void) {
  * Electric Brake Function
  * In case of TORQUE mode, this function replaces the motor "freewheel" with a constant braking when the input torque request is 0.
  * This is useful when a small amount of motor braking is desired instead of "freewheel".
- * 
+ *
  * Input: speedBlend = fixdt(0,16,15), reverseDir = {0, 1}
  * Output: input2.cmd (Throtle) with brake component included
  */
@@ -702,7 +702,7 @@ void electricBrake(uint16_t speedBlend, uint8_t reverseDir) {
   #if defined(ELECTRIC_BRAKE_ENABLE) && (CTRL_TYP_SEL == FOC_CTRL) && (CTRL_MOD_REQ == TRQ_MODE)
     int16_t brakeVal;
 
-    // Make sure the Brake pedal is opposite to the direction of motion AND it goes to 0 as we reach standstill (to avoid Reverse driving) 
+    // Make sure the Brake pedal is opposite to the direction of motion AND it goes to 0 as we reach standstill (to avoid Reverse driving)
     if (speedAvg > 0) {
       brakeVal = (int16_t)((-ELECTRIC_BRAKE_MAX * speedBlend) >> 15);
     } else {
@@ -730,7 +730,7 @@ void electricBrake(uint16_t speedBlend, uint8_t reverseDir) {
  /*
  * Cruise Control Function
  * This function activates/deactivates cruise control.
- * 
+ *
  * Input: button (as a pulse)
  * Output: cruiseCtrlAcv
  */
@@ -758,7 +758,7 @@ void cruiseControl(uint8_t button) {
  */
 int checkInputType(int16_t min, int16_t mid, int16_t max){
 
-  int type = 0;  
+  int type = 0;
   #ifdef CONTROL_ADC
   int16_t threshold = 400;      // Threshold to define if values are too close
   #else
@@ -860,7 +860,7 @@ void readInputRaw(void) {
           ibusL_captured_value[(i/2)] = CLAMP(commandL.channels[i] + (commandL.channels[i+1] << 8) - 1000, 0, INPUT_MAX); // 1000-2000 -> 0-1000
         }
         input1[inIdx].raw = (ibusL_captured_value[0] - 500) * 2;
-        input2[inIdx].raw = (ibusL_captured_value[1] - 500) * 2; 
+        input2[inIdx].raw = (ibusL_captured_value[1] - 500) * 2;
       #else
         input1[inIdx].raw = commandL.steer;
         input2[inIdx].raw = commandL.speed;
@@ -874,7 +874,7 @@ void readInputRaw(void) {
           ibusR_captured_value[(i/2)] = CLAMP(commandR.channels[i] + (commandR.channels[i+1] << 8) - 1000, 0, INPUT_MAX); // 1000-2000 -> 0-1000
         }
         input1[inIdx].raw = (ibusR_captured_value[0] - 500) * 2;
-        input2[inIdx].raw = (ibusR_captured_value[1] - 500) * 2; 
+        input2[inIdx].raw = (ibusR_captured_value[1] - 500) * 2;
       #else
         input1[inIdx].raw = commandR.steer;
         input2[inIdx].raw = commandR.speed;
@@ -1090,7 +1090,7 @@ void readCommand(void) {
  */
 void usart2_rx_check(void)
 {
-  #if defined(DEBUG_SERIAL_USART2) || defined(CONTROL_SERIAL_USART2) || defined(SIDEBOARD_SERIAL_USART2)  
+  #if defined(DEBUG_SERIAL_USART2) || defined(CONTROL_SERIAL_USART2) || defined(SIDEBOARD_SERIAL_USART2)
   static uint32_t old_pos;
   uint32_t pos;
   pos = rx_buffer_L_len - __HAL_DMA_GET_COUNTER(huart2.hdmarx);         // Calculate current position in buffer
@@ -1112,7 +1112,7 @@ void usart2_rx_check(void)
   #endif // DEBUG_SERIAL_USART2
 
   #ifdef CONTROL_SERIAL_USART2
-  uint8_t *ptr;	
+  uint8_t *ptr;
   if (pos != old_pos) {                                                 // Check change in received data
     ptr = (uint8_t *)&commandL_raw;                                     // Initialize the pointer with command_raw address
     if (pos > old_pos && (pos - old_pos) == commandL_len) {             // "Linear" buffer mode: check if current position is over previous one AND data length equals expected length
@@ -1130,7 +1130,7 @@ void usart2_rx_check(void)
   #endif // CONTROL_SERIAL_USART2
 
   #ifdef SIDEBOARD_SERIAL_USART2
-  uint8_t *ptr;	
+  uint8_t *ptr;
   if (pos != old_pos) {                                                 // Check change in received data
     ptr = (uint8_t *)&Sideboard_L_raw;                                  // Initialize the pointer with Sideboard_raw address
     if (pos > old_pos && (pos - old_pos) == Sideboard_L_len) {          // "Linear" buffer mode: check if current position is over previous one AND data length equals expected length
@@ -1164,7 +1164,7 @@ void usart3_rx_check(void)
 {
   #if defined(DEBUG_SERIAL_USART3) || defined(CONTROL_SERIAL_USART3) || defined(SIDEBOARD_SERIAL_USART3)
   static uint32_t old_pos;
-  uint32_t pos;  
+  uint32_t pos;
   pos = rx_buffer_R_len - __HAL_DMA_GET_COUNTER(huart3.hdmarx);         // Calculate current position in buffer
   #endif
 
@@ -1479,15 +1479,15 @@ void sideboardSensors(uint8_t sensors) {
         if (sensor2_trig) {
           switch (sensor2_index) {
             case 0:     // FW Disabled
-              rtP_Left.b_fieldWeakEna  = 0; 
+              rtP_Left.b_fieldWeakEna  = 0;
               rtP_Right.b_fieldWeakEna = 0;
               Input_Lim_Init();
               break;
             case 1:     // FW Enabled
-              rtP_Left.b_fieldWeakEna  = 1; 
+              rtP_Left.b_fieldWeakEna  = 1;
               rtP_Right.b_fieldWeakEna = 1;
               Input_Lim_Init();
-              break; 
+              break;
           }
           if (inIdx == inIdx_prev) { beepShortMany(sensor2_index + 1, 1); }
           if (++sensor2_index > 1) { sensor2_index = 0; }
@@ -1534,7 +1534,7 @@ void saveConfig() {
       }
       HAL_FLASH_Lock();
     }
-  #endif 
+  #endif
 }
 
 
@@ -1575,7 +1575,7 @@ void poweroffPressCheck(void) {
           beepShort(5);
         } else {                                          // Long press: Calibrate ADC Limits
           #ifdef AUTO_CALIBRATION_ENA
-          beepLong(16); 
+          beepLong(16);
           adcCalibLim();
           beepShort(5);
           #endif
@@ -1625,18 +1625,18 @@ void poweroffPressCheck(void) {
   * Max:  32767.99998474121
   * Min: -32768
   * Res:  1.52587890625e-05
-  * 
+  *
   * Inputs:       u     = int16 or int32
   * Outputs:      y     = fixdt(1,32,16)
   * Parameters:   coef  = fixdt(0,16,16) = [0,65535U]
-  * 
-  * Example: 
+  *
+  * Example:
   * If coef = 0.8 (in floating point), then coef = 0.8 * 2^16 = 52429 (in fixed-point)
   * filtLowPass16(u, 52429, &y);
   * yint = (int16_t)(y >> 16); // the integer output is the fixed-point ouput shifted by 16 bits
   */
 void filtLowPass32(int32_t u, uint16_t coef, int32_t *y) {
-  int64_t tmp;  
+  int64_t tmp;
   tmp = ((int64_t)((u << 4) - (*y >> 12)) * coef) >> 4;
   tmp = CLAMP(tmp, -2147483648LL, 2147483647LL);  // Overflow protection: 2147483647LL = 2^31 - 1
   *y = (int32_t)tmp + (*y);
@@ -1647,9 +1647,9 @@ void filtLowPass32(int32_t u, uint16_t coef, int32_t *y) {
   // Parameters:   coef  = fixdt(0,16,16) = [0,65535U]
   // yint = (int16_t)(y >> 20); // the integer output is the fixed-point ouput shifted by 20 bits
   // void filtLowPass32(int16_t u, uint16_t coef, int32_t *y) {
-  //   int32_t tmp;  
-  //   tmp = (int16_t)(u << 4) - (*y >> 16);  
-  //   tmp = CLAMP(tmp, -32768, 32767);  // Overflow protection  
+  //   int32_t tmp;
+  //   tmp = (int16_t)(u << 4) - (*y >> 16);
+  //   tmp = CLAMP(tmp, -32768, 32767);  // Overflow protection
   //   *y  = coef * tmp + (*y);
   // }
 
@@ -1678,7 +1678,7 @@ void rateLimiter16(int16_t u, int16_t rate, int16_t *y) {
 }
 
 
-  /* mixerFcn(rtu_speed, rtu_steer, &rty_speedR, &rty_speedL); 
+  /* mixerFcn(rtu_speed, rtu_steer, &rty_speedR, &rty_speedL);
   * Inputs:       rtu_speed, rtu_steer                  = fixdt(1,16,4)
   * Outputs:      rty_speedR, rty_speedL                = int16_t
   * Parameters:   SPEED_COEFFICIENT, STEER_COEFFICIENT  = fixdt(0,16,14)
@@ -1691,9 +1691,9 @@ void mixerFcn(int16_t rtu_speed, int16_t rtu_steer, int16_t *rty_speedR, int16_t
     prodSpeed   = (int16_t)((rtu_speed * (int16_t)SPEED_COEFFICIENT) >> 14);
     prodSteer   = (int16_t)((rtu_steer * (int16_t)STEER_COEFFICIENT) >> 14);
 
-    tmp         = prodSpeed - prodSteer;  
+    tmp         = prodSpeed - prodSteer;
     tmp         = CLAMP(tmp, -32768, 32767);  // Overflow protection
-    *rty_speedR = (int16_t)(tmp >> 4);        // Convert from fixed-point to int 
+    *rty_speedR = (int16_t)(tmp >> 4);        // Convert from fixed-point to int
     *rty_speedR = CLAMP(*rty_speedR, INPUT_MIN, INPUT_MAX);
 
     tmp         = prodSpeed + prodSteer;
@@ -1708,7 +1708,7 @@ void mixerFcn(int16_t rtu_speed, int16_t rtu_steer, int16_t *rty_speedR, int16_t
 
   /* multipleTapDet(int16_t u, uint32_t timeNow, MultipleTap *x)
   * This function detects multiple tap presses, such as double tapping, triple tapping, etc.
-  * Inputs:       u = int16_t (input signal); timeNow = uint32_t (current time)  
+  * Inputs:       u = int16_t (input signal); timeNow = uint32_t (current time)
   * Outputs:      x->b_multipleTap (get the output here)
   */
 void multipleTapDet(int16_t u, uint32_t timeNow, MultipleTap *x) {
@@ -1717,7 +1717,7 @@ void multipleTapDet(int16_t u, uint32_t timeNow, MultipleTap *x) {
   uint8_t 	b_pulse;
   uint8_t 	z_pulseCnt;
   uint8_t   z_pulseCntRst;
-  uint32_t 	t_time; 
+  uint32_t 	t_time;
 
   // Detect hysteresis
   if (x->b_hysteresis) {

@@ -29,7 +29,7 @@
   #ifdef CONTROL_IBUS
     typedef struct{
       uint8_t  start;
-      uint8_t  type; 
+      uint8_t  type;
       uint8_t  channels[IBUS_NUM_CHANNELS*2];
       uint8_t  checksuml;
       uint8_t  checksumh;
