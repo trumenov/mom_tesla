@@ -1563,35 +1563,41 @@ void poweroff(void) {
 void poweroffPressCheck(void) {
   #if !defined(VARIANT_HOVERBOARD) && !defined(VARIANT_TRANSPOTTER)
     if(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {
-      uint16_t cnt_press = 0;
-      while(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {
-        HAL_Delay(10);
-        if (cnt_press++ == 5 * 100) { beepShort(5); }
-      }
-
-      if (cnt_press > 8) enable = 0;
-
-      if (cnt_press >= 5 * 100) {                         // Check if press is more than 5 sec
-        HAL_Delay(1000);
-        if (HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {  // Double press: Adjust Max Current, Max Speed
-          while(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) { HAL_Delay(10); }
-          beepLong(8);
-          updateCurSpdLim();
-          beepShort(5);
-        } else {                                          // Long press: Calibrate ADC Limits
-          #ifdef AUTO_CALIBRATION_ENA
-          beepLong(16);
-          adcCalibLim();
-          beepShort(5);
-          #endif
-        }
-      } else if (cnt_press > 8) {                         // Short press: power off (80 ms debounce)
-        #if defined(DEBUG_SERIAL_USART2) || defined(DEBUG_SERIAL_USART3)
-          printf("Powering off, button has been pressed\r\n");
-        #endif
+      return; // Turned off power_btn - always_on.
+    } else {
       poweroff();
-      }
     }
+
+    // if(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {
+    //   uint16_t cnt_press = 0;
+    //   while(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {
+    //     HAL_Delay(10);
+    //     if (cnt_press++ == 5 * 100) { beepShort(5); }
+    //   }
+
+    //   if (cnt_press > 8) enable = 0;
+
+    //   if (cnt_press >= 5 * 100) {                         // Check if press is more than 5 sec
+    //     HAL_Delay(1000);
+    //     if (HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {  // Double press: Adjust Max Current, Max Speed
+    //       while(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) { HAL_Delay(10); }
+    //       beepLong(8);
+    //       updateCurSpdLim();
+    //       beepShort(5);
+    //     } else {                                          // Long press: Calibrate ADC Limits
+    //       #ifdef AUTO_CALIBRATION_ENA
+    //       beepLong(16);
+    //       adcCalibLim();
+    //       beepShort(5);
+    //       #endif
+    //     }
+    //   } else if (cnt_press > 8) {                         // Short press: power off (80 ms debounce)
+    //     #if defined(DEBUG_SERIAL_USART2) || defined(DEBUG_SERIAL_USART3)
+    //       printf("Powering off, button has been pressed\r\n");
+    //     #endif
+    //   poweroff();
+    //   }
+    // }
   #elif defined(VARIANT_TRANSPOTTER)
     if(HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN)) {
       enable = 0;
